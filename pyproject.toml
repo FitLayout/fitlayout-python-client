@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build" 
+
+[project]
+name = "fitlayout-python-client"
+authors = [
+    {name = "Radek Burget", email = "burgetr@fit.vut.cz"}
+]
+description = "Client library for python"
+version = "0.0.1"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests >= 2.32.3",
+    "rdflib >= 7.1.1"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["flclient"]

@@ -1,0 +1,21 @@
+*~
+*.ttl
+*.code-workspace
+/data/*
+/models/*
+/results/*
+
+# Logs and temporary files
+.venv
+.pytest_cache
+__pycache__
+*.log
+
+# Compiled files
+*.pyc
+*.pyo
+
+# Distribution
+dist
+build
+*.egg-info
