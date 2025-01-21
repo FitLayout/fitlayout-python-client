@@ -115,6 +115,15 @@ class FitLayoutClient:
         self.add_quad_object(tagSupportUri, SEGM.hasTag, tagUri, artifact)
         self.add_quad_literal(tagSupportUri, SEGM.support, support, artifact)
 
+    def invoke_artifact_service(self, service_id, parentUri, params = {}):
+        """ Invokes a FitLayout service with the given parameters """
+        url = f"{self.repo_endpoint()}/artifact/create"
+        headers = { "Content-Type": "application/json" }
+        body = { "serviceId": service_id, "parentIri": str(parentUri), "params": params }
+        response = requests.post(url, json=body, headers=headers)
+        #response.raise_for_status()
+        return response.json()
+
 def decode_json_value(value):
     """ Decodes a value from the FitLayout API into a Python object """
     if value["type"] == "uri":
