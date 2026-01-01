@@ -7,3 +7,4 @@ from .flclient import (
     SEGM,
     R,
 )
+from .cli import FitLayoutCLI

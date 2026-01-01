@@ -47,9 +47,9 @@ class FitLayoutClient:
         for row in self.sparql(query):
             yield row["pg"]
     
-    def get_artifact(self, uri):
-        """ Returns a single artifact from the repository """
-        url = f"{self.repo_endpoint()}/artifact/item/" + requests.utils.quote(str(uri), safe="")
+    def get_artifact(self, iri):
+        """ Returns a graph of the entire artifact from the repository (artifact content included). """
+        url = f"{self.repo_endpoint()}/artifact/item/" + requests.utils.quote(str(iri), safe="")
         headers = { "Accept": "text/turtle" }
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -57,6 +57,25 @@ class FitLayoutClient:
         g = Graph()
         g.parse(data=data, format="turtle")
         return g
+    
+    def get_artifact_info(self, iri):
+        """ Returns a graph of the entire artifact from the repository (artifact content NOT included). """
+        url = f"{self.repo_endpoint()}/artifact/item/" + requests.utils.quote(str(iri), safe="")
+        headers = { "Accept": "text/turtle" }
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.text
+        g = Graph()
+        g.parse(data=data, format="turtle")
+        return g
+
+    def get_artifact_image(self, iri):
+        """ Returns a PNG image of the artifact. """
+        url = f"{self.repo_endpoint()}/artifact/item/" + requests.utils.quote(str(iri), safe="")
+        headers = { "Accept": "image/png" }
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.content
     
     def add_quad_object(self, subject, predicate, object, artifact):
         """ Adds a quad with an object to the repository """
