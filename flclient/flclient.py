@@ -138,7 +138,9 @@ class FitLayoutClient:
         """ Invokes a FitLayout service with the given parameters """
         url = f"{self.repo_endpoint()}/artifact/create"
         headers = { "Content-Type": "application/json" }
-        body = { "serviceId": service_id, "parentIri": str(parentUri), "params": params }
+        body = { "serviceId": service_id, "params": params }
+        if parentUri is not None:
+            body["parentIri"] = str(parentUri)
         response = requests.post(url, json=body, headers=headers)
         #response.raise_for_status()
         return response.json()

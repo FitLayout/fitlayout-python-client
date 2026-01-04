@@ -26,6 +26,17 @@ class FitLayoutCLI:
         """ Retrieves an artifact by its IRI. """
         return self.fl.get_artifact(iri)
 
+    def render(self, url, service_id = "FitLayout.Puppeteer", width=1200, height=800, params={}):
+        """ Renders a webpage using the FitLayout service. """
+        service_params = {
+            "url": url,
+            "width": width,
+            "height": height,
+        }
+        service_params.update(params)
+        response = self.fl.invoke_artifact_service(service_id, None, service_params)
+        return response
+
     def export(self, art, format="turtle", output_file=None):
         """ 
         Exports an artifact graph to a specified format.
