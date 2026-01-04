@@ -36,6 +36,13 @@ class FitLayoutCLI:
         service_params.update(params)
         response = self.fl.invoke_artifact_service(service_id, None, service_params)
         return response
+    
+    def segment(self, iri, service_id = "FitLayout.BasicAreas", params={'preserveAuxAreas': True}):
+        """ 
+        Creates an AreaTree from an input Page artifact by applying a FitLayout segmentation service. 
+        """
+        response = self.fl.invoke_artifact_service(service_id, iri, params)
+        return response
 
     def export(self, art, format="turtle", output_file=None):
         """ 
