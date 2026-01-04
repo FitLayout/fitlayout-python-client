@@ -37,6 +37,13 @@ class FitLayoutCLI:
         response = self.fl.invoke_artifact_service(service_id, None, service_params)
         return response
     
+    def query(self, query, auto_prefixes=True):
+        """ Performs a query using the FitLayout server. """
+        if auto_prefixes:
+            query = default_prefix_string() + query
+        response = self.fl.sparql(query)
+        return list(response)
+    
     def segment(self, iri, service_id = "FitLayout.BasicAreas", params={'preserveAuxAreas': True}):
         """ 
         Creates an AreaTree from an input Page artifact by applying a FitLayout segmentation service. 
