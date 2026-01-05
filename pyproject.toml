@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build" 
 
 [project]
-name = "fitlayout-python-client"
+name = "flclient"
 authors = [
     {name = "Radek Burget", email = "burgetr@fit.vut.cz"}
 ]
