@@ -53,6 +53,7 @@ class FitLayoutClient:
         headers = { "Accept": "text/turtle" }
         response = requests.get(url, headers=headers)
         response.raise_for_status()
+        response.encoding = "utf-8"
         data = response.text
         g = Graph()
         g.parse(data=data, format="turtle")
@@ -81,6 +82,7 @@ class FitLayoutClient:
         headers = { "Accept": "text/turtle" }
         response = requests.get(url, headers=headers)
         response.raise_for_status()
+        response.encoding = "utf-8"
         data = response.text
         g = Graph()
         g.parse(data=data, format="turtle")
