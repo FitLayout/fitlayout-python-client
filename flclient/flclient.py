@@ -58,6 +58,23 @@ class FitLayoutClient:
         g.parse(data=data, format="turtle")
         return g
     
+    def delete_artifact(self, iri):
+        """ Deletes the artifact from the repository. """
+        url = f"{self.repo_endpoint()}/artifact/item/" + requests.utils.quote(str(iri), safe="")
+        response = requests.delete(url)
+        response.raise_for_status()
+        return response.json()
+
+    def clear_repository(self):
+        """ Clears and re-initializes the repository. Deletes all artifacts. """
+        url = f"{self.repo_endpoint()}/repository/clear"
+        response = requests.delete(url)
+        response.raise_for_status()
+        url = f"{self.repo_endpoint()}/repository/forceInitRepo"
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+
     def get_artifact_info(self, iri):
         """ Returns a graph of the entire artifact from the repository (artifact content NOT included). """
         url = f"{self.repo_endpoint()}/artifact/item/" + requests.utils.quote(str(iri), safe="")

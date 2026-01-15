@@ -38,6 +38,18 @@ class FitLayoutCLI:
             ret.append(str(artifact))
         return ret
 
+    def clear_repository(self):
+        """
+        Clears and re-initializes the repository. Deletes all artifacts.
+        """
+        clearConfirmed = input("Are you sure you want to clear the repository? (yes/no): ").lower() == "yes"
+        if clearConfirmed:
+            r = self.fl.clear_repository()
+            print("Repository cleared.")
+            return r
+        else:
+            print("Repository not cleared.")
+
     def get_artifact(self, iri):
         """
         Retrieves an artifact by its IRI.
@@ -45,6 +57,13 @@ class FitLayoutCLI:
         @return: The artifact RDF graph.
         """
         return self.fl.get_artifact(iri)
+    
+    def delete_artifact(self, iri):
+        """
+        Deletes an artifact by its IRI.
+        @param iri: The IRI of the artifact to delete.
+        """
+        return self.fl.delete_artifact(iri)
 
     def render(self, url, service_id = "FitLayout.Puppeteer", width=1200, height=800, params={}):
         """
