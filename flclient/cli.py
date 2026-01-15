@@ -1,5 +1,6 @@
 import sys
 import requests
+from rdflib import URIRef
 from flclient import FitLayoutClient, default_prefix_string, R, SEGM
 
 class FitLayoutCLI:
@@ -64,6 +65,19 @@ class FitLayoutCLI:
         @param iri: The IRI of the artifact to delete.
         """
         return self.fl.delete_artifact(iri)
+
+    def info(self, iri):
+        """
+        Print information about an artifact by its IRI.
+        @param iri: The IRI of the artifact to retrieve information about.
+        """
+        iriRef = URIRef(iri)
+        g = self.fl.get_artifact_info(iri)
+        for s, p, o in g.triples((iriRef, None, None)):
+            prop = p.fragment
+            if prop == "pngImage":
+                continue
+            print(f"{prop}: {o}")        
 
     def render(self, url, service_id = "FitLayout.Puppeteer", width=1200, height=800, params={}):
         """

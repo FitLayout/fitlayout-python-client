@@ -77,7 +77,7 @@ class FitLayoutClient:
 
     def get_artifact_info(self, iri):
         """ Returns a graph of the entire artifact from the repository (artifact content NOT included). """
-        url = f"{self.repo_endpoint()}/artifact/item/" + requests.utils.quote(str(iri), safe="")
+        url = f"{self.repo_endpoint()}/artifact/info/" + requests.utils.quote(str(iri), safe="")
         headers = { "Accept": "text/turtle" }
         response = requests.get(url, headers=headers)
         response.raise_for_status()
