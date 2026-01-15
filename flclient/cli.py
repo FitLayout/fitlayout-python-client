@@ -16,6 +16,11 @@ class FitLayoutCLI:
     }
 
     def __init__(self, connection_url, repo_id):
+        """
+        Initializes the CLI with a connection to a FitLayout server.
+        @param connection_url: The URL of the FitLayout API server.
+        @param repo_id: The ID of the repository to use.
+        """
         self.fl = FitLayoutClient(connection_url, repo_id)
     
     def ping(self):
@@ -24,18 +29,32 @@ class FitLayoutCLI:
         print(self.fl.ping())
 
     def list_artifacts(self, type=None):
-        """ Lists all artifacts in the repository. """
+        """
+        Lists all artifacts in the repository.
+        @param type: The type of artifacts to list (e.g., BOX.Page). If None, lists all artifacts.
+        """
         ret = []
         for artifact in self.fl.artifacts(type):
             ret.append(str(artifact))
         return ret
 
     def get_artifact(self, iri):
-        """ Retrieves an artifact by its IRI. """
+        """
+        Retrieves an artifact by its IRI.
+        @param iri: The IRI of the artifact to retrieve.
+        @return: The artifact RDF graph.
+        """
         return self.fl.get_artifact(iri)
 
     def render(self, url, service_id = "FitLayout.Puppeteer", width=1200, height=800, params={}):
-        """ Renders a webpage using the FitLayout service. """
+        """
+        Renders a webpage using the FitLayout service.
+        @param url: The URL of the webpage to render.
+        @param service_id: The ID of the rendering service to use (default: FitLayout.Puppeteer).
+        @param width: The viewport width for rendering (default: 1200).
+        @param height: The viewport height for rendering (default: 800).
+        @param params: A dictionary of additional parameters for the service.
+        """
         service_params = {
             "url": url,
             "width": width,
@@ -46,7 +65,11 @@ class FitLayoutCLI:
         return response
     
     def query(self, query, auto_prefixes=True):
-        """ Performs a query using the FitLayout server. """
+        """
+        Executes a SPARQL query on the FitLayout server.
+        @param query: The SPARQL query to execute.
+        @param auto_prefixes: If True, prepends a default set of RDF prefixes to the query.
+        """
         if auto_prefixes:
             query = default_prefix_string() + query
         response = self.fl.sparql(query)
@@ -55,6 +78,9 @@ class FitLayoutCLI:
     def segment(self, iri, service_id = "FitLayout.BasicAreas", params={'preserveAuxAreas': True}):
         """ 
         Creates an AreaTree from an input Page artifact by applying a FitLayout segmentation service. 
+        @param iri: The IRI of the Page artifact to segment.
+        @param service_id: The ID of the segmentation service to use.
+        @param params: A dictionary of parameters for the segmentation service.
         """
         response = self.fl.invoke_artifact_service(service_id, iri, params)
         return response
@@ -63,6 +89,9 @@ class FitLayoutCLI:
         """ 
         Exports an artifact graph to a specified format.
         See the RDFLib documentation for more information on supported RDF formats.
+        @param artifact_graph: The RDF graph of the artifact to export.
+        @param format: The serialization format (e.g., 'turtle', 'xml').
+        @param output_file: The path to the output file. If None, prints to standard output.
         @see https://rdflib.readthedocs.io/en/7.1.1/plugin_serializers.html
         """
         # Use RDFLib to serialize the artifact RDF graph in the specified format.
@@ -73,13 +102,20 @@ class FitLayoutCLI:
             print(artifact_graph.serialize(format=format))
 
     def export_artifact(self, iri, format="turtle", output_file=None):
-        """ Exports an artifact graph by its IRI to a specified format. """
+        """
+        Exports an artifact graph by its IRI to a specified format.
+        @param iri: The IRI of the artifact to export.
+        @param format: The serialization format.
+        @param output_file: The path to the output file. If None, prints to standard output.
+        """
         art = self.get_artifact(iri)
         self.export(art, format, output_file)
 
     def export_image(self, artifact_iri, output_file):
         """ 
         Exports an artifact's image as a PNG file.
+        @param artifact_iri: The IRI of the artifact whose image is to be exported.
+        @param output_file: The path to save the output PNG file.
         """
         imgdata = self.fl.get_artifact_image(artifact_iri)
         with open(output_file, "wb") as f:
@@ -88,7 +124,8 @@ class FitLayoutCLI:
     def dump(self, format="turtle", output_file=None):
         """
         Dumps all artifacts in the repository to a specified format.
-        @param format: The format to export the data in. Supported formats: turtle, n3, json-ld, xml, nquads. 
+        @param format: The format to export the data in. Supported formats: turtle, n3, json-ld, xml, nquads.
+        @param output_file: The path to the output file. If None, prints to standard output.
         """
         endpoint = self.fl.repo_endpoint() + "/repository/statements"
         # Set the Accept header based on the specified format.
