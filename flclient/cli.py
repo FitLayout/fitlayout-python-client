@@ -106,6 +106,61 @@ class FitLayoutCLI:
         else:
             print(response.text)
 
+    def import_file(self, input_file, format, split=None):
+        """
+        Imports serialized RDF from a file.
+        The split parameter is applicable to nquads and n3 formats only and is used for splitting the source file by the given number of lines and uploading by 
+        separate requests to bypass the POST data max size limit.
+        @param input_file: The path to the input file.
+        @param format: The format of the input data. Supported formats: turtle, n3, json-ld, xml, nquads.
+        @param split: The number of lines per chunk for chunked upload.
+        """
+        endpoint = self.fl.repo_endpoint() + "/repository/statements"
+        content_type = self.mime_types.get(format)
+        if not content_type:
+            print(f"Unsupported format: {format}. Supported formats: {', '.join(self.mime_types.keys())}")
+            return
+        
+        headers = { "Content-Type": content_type }
+
+        if split and format in ["nquads", "n3"]:
+            print(f"Importing {input_file} in chunks of {split} lines...")
+            try:
+                with open(input_file, "r") as f:
+                    chunk = []
+                    for i, line in enumerate(f):
+                        chunk.append(line)
+                        if (i + 1) % split == 0:
+                            data = "".join(chunk)
+                            response = requests.post(endpoint, headers=headers, data=data.encode('utf-8'))
+                            response.raise_for_status()
+                            chunk = []
+                            print(f"Uploaded {i + 1} lines.")
+                    if chunk:
+                        data = "".join(chunk)
+                        response = requests.post(endpoint, headers=headers, data=data.encode('utf-8'))
+                        response.raise_for_status()
+                        print(f"Uploaded remaining {len(chunk)} lines.")
+                print("Import finished successfully.")
+            except FileNotFoundError:
+                print(f"Error: Input file not found at {input_file}")
+            except requests.exceptions.RequestException as e:
+                print(f"An error occurred during import: {e}")
+        else:
+            if split:
+                print(f"Warning: 'split' parameter is ignored for '{format}' format.")
+            print(f"Importing {input_file}...")
+            try:
+                with open(input_file, "rb") as f:
+                    data = f.read()
+                response = requests.post(endpoint, headers=headers, data=data)
+                response.raise_for_status()
+                print("Import finished successfully.")
+            except FileNotFoundError:
+                print(f"Error: Input file not found at {input_file}")
+            except requests.exceptions.RequestException as e:
+                print(f"An error occurred during import: {e}")
+
 def p(data):
     """ Pretty-prints a list of data. """
     print("\n".join(data))
