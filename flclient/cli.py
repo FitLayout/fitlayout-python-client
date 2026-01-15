@@ -7,6 +7,14 @@ class FitLayoutCLI:
     A command-line interface for interacting with a FitLayout server.
     """
 
+    mime_types = {
+        "turtle": "text/turtle",
+        "n3": "application/n-triples",
+        "json-ld": "application/ld+json",
+        "xml": "application/edf+xml",
+        "nquads": "application/n-quads"
+    }
+
     def __init__(self, connection_url, repo_id):
         self.fl = FitLayoutClient(connection_url, repo_id)
     
@@ -51,18 +59,18 @@ class FitLayoutCLI:
         response = self.fl.invoke_artifact_service(service_id, iri, params)
         return response
 
-    def export(self, art, format="turtle", output_file=None):
+    def export(self, artifact_graph, format="turtle", output_file=None):
         """ 
         Exports an artifact graph to a specified format.
         See the RDFLib documentation for more information on supported RDF formats.
         @see https://rdflib.readthedocs.io/en/7.1.1/plugin_serializers.html
         """
-        # Use RDFLib to serialize the artifact in the specified format.
+        # Use RDFLib to serialize the artifact RDF graph in the specified format.
         if output_file:
             with open(output_file, "w") as f:
-                f.write(art.serialize(format=format))
+                f.write(artifact_graph.serialize(format=format))
         else:
-            print(art.serialize(format=format))
+            print(artifact_graph.serialize(format=format))
 
     def export_artifact(self, iri, format="turtle", output_file=None):
         """ Exports an artifact graph by its IRI to a specified format. """
@@ -76,6 +84,27 @@ class FitLayoutCLI:
         imgdata = self.fl.get_artifact_image(artifact_iri)
         with open(output_file, "wb") as f:
             f.write(imgdata)
+    
+    def dump(self, format="turtle", output_file=None):
+        """
+        Dumps all artifacts in the repository to a specified format.
+        @param format: The format to export the data in. Supported formats: turtle, n3, json-ld, xml, nquads. 
+        """
+        endpoint = self.fl.repo_endpoint() + "/repository/statements"
+        # Set the Accept header based on the specified format.
+        accept = self.mime_types.get(format)
+        if not accept:
+            print(f"Unsupported format: {format}. Supported formats: {', '.join(self.mime_types.keys())}")
+            return
+        headers = { "Accept": accept }
+        # Perform a GET request to retrieve the repository statements.
+        response = requests.get(endpoint, headers=headers)
+        response.raise_for_status()
+        if output_file:
+            with open(output_file, "w") as f:
+                f.write(response.text)
+        else:
+            print(response.text)
 
 def p(data):
     """ Pretty-prints a list of data. """
