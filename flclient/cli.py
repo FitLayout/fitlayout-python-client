@@ -3,6 +3,9 @@ import requests
 from rdflib import URIRef
 from flclient import FitLayoutClient, default_prefix_string, R, SEGM, BOX
 
+# If flclient is a dependency in your project, the interactive CLI can be invoked by:
+# python -i -m flclient.cli <server_url> <repository_id>
+
 class FitLayoutCLI:
     """
     A command-line interface for interacting with a FitLayout server.
