@@ -1,7 +1,7 @@
 import sys
 import requests
 from rdflib import URIRef
-from flclient import FitLayoutClient, default_prefix_string, R, SEGM
+from flclient import FitLayoutClient, default_prefix_string, R, SEGM, BOX
 
 class FitLayoutCLI:
     """
@@ -29,15 +29,28 @@ class FitLayoutCLI:
         print("Pinging FitLayout server...", end="")
         print(self.fl.ping())
 
-    def list_artifacts(self, type=None):
+    def get_artifacts(self, type=None):
         """
-        Lists all artifacts in the repository.
-        @param type: The type of artifacts to list (e.g., BOX.Page). If None, lists all artifacts.
+        Gets a list of artifact IRIs in available the repository.
+        @param type: The type of artifacts to list (e.g., BOX.Page or SEGM.AreaTree). If None, lists all artifacts.
         """
         ret = []
         for artifact in self.fl.artifacts(type):
             ret.append(str(artifact))
         return ret
+
+    def list_artifacts(self, type=None):
+        """
+        Prints a list of artifact IRIs in the repository and their types.
+        @param type: The type of artifacts to list (e.g., BOX.Page or SEGM.AreaTree). If None, lists all artifacts.
+        """
+        query = default_prefix_string()
+        if (type is None):
+            query += " SELECT ?pg ?type WHERE { ?pg rdf:type ?type . ?type rdfs:subClassOf fl:Artifact }"
+        else:
+            query += " SELECT ?pg ?type WHERE { ?pg rdf:type <" + str(type) + "> BIND (<" + str(type) + "> as ?type)}\n"
+        for row in self.fl.sparql(query):
+            print(f"{str(row['pg'])}\t {str(row['type'])}")
 
     def clear_repository(self):
         """
