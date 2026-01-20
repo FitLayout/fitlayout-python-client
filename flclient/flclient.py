@@ -188,6 +188,7 @@ def default_prefix_string():
     prefixes = default_prefixes()
     return "\n".join(f"PREFIX {prefix}: <{value}>" for prefix, value in prefixes.items())
 
+FL = Namespace("http://fitlayout.github.io/ontology/fitlayout.owl#")
 BOX = Namespace("http://fitlayout.github.io/ontology/render.owl#")
 SEGM = Namespace("http://fitlayout.github.io/ontology/segmentation.owl#")
 R = Namespace("http://fitlayout.github.io/resource/")
