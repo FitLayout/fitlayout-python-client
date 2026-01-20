@@ -248,6 +248,9 @@ class FitLayoutCLI:
                 print(f"An error occurred during import: {e}")
     
     def list_tags(self):
+        """
+        Lists the areas that have been assigned tags.
+        """
         query = default_prefix_string() + """
             SELECT ?a ?text ?tag ?support ?ts
             WHERE {
