@@ -21,13 +21,20 @@ class FitLayoutClient:
         response.raise_for_status()
         return response.text # should return "ok"
 
-    def sparql(self, query):
-        """ Executes a SPARQL query on the repository """
-        url = f"{self.repo_endpoint()}/repository/query?limit=500000"
+    def exec_sparql_query(self, query, limit=50000, offset=0, distinct=False):
+        """ Executes a SPARQL SELECT query on the repository and returns the bindings. """
+        url = f"{self.repo_endpoint()}/repository/query?limit={limit}&offset={offset}"
+        if distinct:
+            url += "&distinct=true"
         headers = { "Content-Type": "application/sparql-query" }
         response = requests.post(url, data=query, headers=headers)
         response.raise_for_status()
         data = response.json()
+        return data
+
+    def sparql(self, query):
+        """ Executes a SPARQL SELECT query on the repository and returns the bindings as a generator. """
+        data = self.exec_sparql_query(query)
         if "results" in data and "bindings" in data["results"]:
             for binding in data["results"]["bindings"]:
                 row = {}
