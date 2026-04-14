@@ -170,6 +170,14 @@ class FitLayoutClient:
         response = requests.post(url, json=body, headers=headers)
         #response.raise_for_status()
         return response.json()
+    
+    def get_services(self):
+        """ Returns the descriptions of all available services in the repository """
+        url = f"{self.repo_endpoint()}/service"
+        headers = { "Accept": "application/json" }
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json()
 
 def decode_json_value(value):
     """ Decodes a value from the FitLayout API into a Python object """
